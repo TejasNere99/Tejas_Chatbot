@@ -14,12 +14,10 @@
 
 ---
 
-## 📸 Screenshots
-
-> Replace the placeholder images with your own later.
+## 📸 Screenshot
 
 <p align="center">
-  <img src="https://via.placeholder.com/700x400.png?text=App+Screenshot+1" /><br>
+  <img src="/chatbot.png?text=App+Screenshot+1" /><br>
 </p>
 
 ---
