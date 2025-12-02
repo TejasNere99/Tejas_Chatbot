@@ -488,16 +488,8 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script type="module">
-        import { GoogleGenAI } from "@google/genai";
 
-        // ==========================================
-        //  ⚠️ PASTE YOUR API KEY BELOW
-        // ==========================================
-        const API_KEY = "AIzaSyA5FxNW7yIjnU0dY5JX3Cny20-k5_LWdj0";
-
-        const MODEL_NAME = 'gemini-2.5-flash';
-
-        // TEJAS PERSONALITY INSTRUCTIONS
+        // TEJAS PERSONALITY INSTRUCTIONS (same rakha)
         const TEJAS_SYSTEM_INSTRUCTION = `You are **TejasGPT**, the AI version of “Tejas”.  
         Always remember you *are Tejas only*, and you must behave exactly like him.
 
@@ -546,12 +538,8 @@
             College-boy style.  
             Short replies only.  
             Sarcasm ON.  
-            Roasting allowed if needed.  
-        `;
-
-        // APP STATE
-        let chatSession = null;
-        let genAI = null;
+            Roasting allowed if needed.
+    `;
 
         // DOM ELEMENTS
         const chatContainer = document.getElementById('chat-container');
@@ -559,42 +547,21 @@
         const sendBtn = document.getElementById('send-btn');
         const loader = document.getElementById('loader');
 
-        // 1. INITIALIZE CHAT
-        function initializeChat() {
-            if (!API_KEY) {
-                appendMessage('model', "⚠️ **System Error**: API Key missing. Please open the code file and add your key in the `script` section.");
-                return;
-            }
-            try {
-                genAI = new GoogleGenAI({ apiKey: API_KEY });
-                chatSession = genAI.chats.create({
-                    model: MODEL_NAME,
-                    config: { systemInstruction: TEJAS_SYSTEM_INSTRUCTION },
-                });
-            } catch (error) {
-                console.error("Init Error:", error);
-                appendMessage('model', "Connection Error. Please restart.");
-            }
-        }
-
-        // 2. ADD MESSAGE TO UI
+        // 1. ADD MESSAGE TO UI
         function appendMessage(role, text) {
             const isUser = role === 'user';
 
             const messageRow = document.createElement('div');
-            messageRow.className = `message-row ${role}`; // 'user' or 'model'
+            messageRow.className = `message-row ${role}`;
 
-            // Avatar Logic
             const avatar = document.createElement('div');
             avatar.className = 'avatar';
             avatar.innerHTML = isUser ? '<i class="fas fa-user"></i>' : '<i class="fas fa-bolt"></i>';
 
-            // Bubble Logic
             const bubble = document.createElement('div');
             bubble.className = 'bubble';
-            bubble.textContent = text; // Securely set text
+            bubble.textContent = text;
 
-            // Assemble
             if (isUser) {
                 messageRow.appendChild(bubble);
                 messageRow.appendChild(avatar);
@@ -603,64 +570,54 @@
                 messageRow.appendChild(bubble);
             }
 
-            // Insert before loader (Now loader is a valid child of chatContainer)
             chatContainer.insertBefore(messageRow, loader);
             scrollToBottom();
         }
 
-        // 3. SCROLL HELPER
+        // 2. SCROLL HELPER
         function scrollToBottom() {
-            // Scroll entire container to the bottom
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // 4. SEND MESSAGE LOGIC
+        // 3. SEND MESSAGE LOGIC (NEW + CLEAN)
         async function handleSend() {
             const text = userInput.value.trim();
             if (!text) return;
 
-            // Check API Key
-            if (!API_KEY) {
-                alert("Please set your API Key in the code first!");
-                return;
-            }
-
-            // Clear Input
-            userInput.value = '';
-
-            // Show User Message
+            // Show user message
             appendMessage('user', text);
+            userInput.value = "";
 
-            // Show Loader & Disable Button
+            // Show loader
             loader.style.display = 'flex';
-            scrollToBottom();
             sendBtn.disabled = true;
 
-            // Init Chat if needed
-            if (!chatSession) initializeChat();
-
             try {
-                if (chatSession) {
-                    // Call Gemini API
-                    const response = await chatSession.sendMessage({ message: text });
-                    const reply = response.text || "Sorry limit exceeded...";
+                // 🚀 BACKEND SAFE CALL
+                const response = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        message: text,
+                        system: TEJAS_SYSTEM_INSTRUCTION
+                    })
+                });
 
-                    // Hide Loader & Show Reply
-                    loader.style.display = 'none';
-                    appendMessage('model', reply);
-                }
-            } catch (error) {
-                console.error(error);
+                const data = await response.json();
+
                 loader.style.display = 'none';
-                appendMessage('model', "Bhai network issue vat-tay... punha try kar. 😭");
-            } finally {
-                sendBtn.disabled = false;
-                userInput.focus();
-                scrollToBottom();
+                appendMessage('model', data.reply || "Error aahe re biduuu 😭");
+
+            } catch (err) {
+                loader.style.display = 'none';
+                appendMessage("model", "Network mood off aahe re biduuu 😭🔥");
             }
+
+            sendBtn.disabled = false;
+            scrollToBottom();
         }
 
-        // 5. EVENT LISTENERS
+        // 4. EVENT LISTENERS
         sendBtn.addEventListener('click', handleSend);
 
         userInput.addEventListener('keydown', (e) => {
@@ -670,11 +627,11 @@
             }
         });
 
-        // 6. START
-        initializeChat();
+        // 5. FIRST MESSAGE
         appendMessage('model', "Welcome biduuu 😅🔥\nBol na kay doubt aahe? (COA, DELD, OOP, Maths, SPM)");
 
     </script>
+
 </body>
 
 </html>
