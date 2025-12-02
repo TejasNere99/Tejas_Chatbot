@@ -88,7 +88,7 @@ TejasGPT/ <br>
 │ <br>
 ├── api    <br>
 &nbsp;&nbsp;└── chat.js     <br>
-├── chatbot.html    <br>
+├── index.html    <br>
 └── README.md     <br>
 
 ---
