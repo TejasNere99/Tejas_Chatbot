@@ -86,7 +86,9 @@ It is specificaly created to help students in following subjects:
 
 TejasGPT/ <br>
 │ <br>
-├── index.html    <br>
+├── api    <br>
+&nbsp;&nbsp;└── chat.js     <br>
+├── chatbot.html    <br>
 └── README.md     <br>
 
 ---
@@ -94,7 +96,7 @@ TejasGPT/ <br>
 # 👤 Author
 
 **Tejas Nere**  
-AI Developer • Student • Tech Enthusiast  
+• Student • Tech Enthusiast  
 
 
 ---
