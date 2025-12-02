@@ -56,3 +56,21 @@ module.exports = async (req, res) => {
   }
 };
 
+// /api/chat.js  (temporary test)
+module.exports = async (req, res) => {
+  if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
+
+  try {
+    const { message } = req.body || {};
+    // Return a deterministic test reply
+    return res.status(200).json({
+      ok: true,
+      reply: `✅ Echo from server: "${message || 'no message'}" (temp test)`
+    });
+  } catch (err) {
+    console.error("TEMP TEST ERROR:", err);
+    return res.status(500).json({ ok: false, reply: "Server error (temp test)" });
+  }
+};
+
+
